@@ -170,15 +170,15 @@ function compressHtmlImages(html) {
       var img = new Image();
       img.onload = function() {
         URL.revokeObjectURL(blobUrl);
-        var maxW = 400;
+        var maxW = 800;
         var w = img.naturalWidth, h = img.naturalHeight;
         if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
         var c = document.createElement('canvas');
         c.width = w; c.height = h;
         c.getContext('2d').drawImage(img, 0, 0, w, h);
-        var q = 0.4;
+        var q = 0.7;
         var out = c.toDataURL('image/jpeg', q);
-        while (out.length > 150000 && q > 0.05) {
+        while (out.length > 400000 && q > 0.15) {
           q -= 0.05;
           out = c.toDataURL('image/jpeg', q);
         }
