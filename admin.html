@@ -5,68 +5,62 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>공지사항 관리 — 내일종합관리</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/carbon.css" />
 <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet" />
 <style>
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'IBM Plex Sans KR','Pretendard',sans-serif;background:#f5f5f5;color:#1c1d22;}
-.top-bar{background:#21459a;color:#fff;padding:18px 32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-.top-bar h1{font-size:22px;font-weight:700;}
-.top-bar .user{display:flex;align-items:center;gap:12px;font-size:16px;}
-.top-bar button{background:#fff;color:#21459a;border:none;padding:10px 20px;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;}
-.container{max-width:960px;margin:0 auto;padding:32px 20px;}
-
 /* 로그인 화면 */
 .login-box{text-align:center;padding:120px 20px;}
 .login-box h2{font-size:28px;margin-bottom:16px;}
-.login-box p{font-size:18px;color:#666;margin-bottom:32px;}
-.login-btn{background:#21459a;color:#fff;border:none;padding:18px 40px;border-radius:10px;font-size:20px;font-weight:700;cursor:pointer;}
-.login-btn:hover{background:#1a3678;}
+.login-box p{font-size:18px;color:var(--ink-muted);margin-bottom:32px;}
+.login-btn{background:var(--primary);color:#fff;border:none;padding:18px 40px;border-radius:var(--r-btn);font-size:20px;font-weight:700;cursor:pointer;font-family:var(--font);}
+.login-btn:hover{background:var(--blue-hover);}
 
-/* 목록 */
-.toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px;}
-.toolbar h2{font-size:24px;font-weight:700;}
-.btn-new{background:#21459a;color:#fff;border:none;padding:16px 32px;border-radius:10px;font-size:18px;font-weight:700;cursor:pointer;}
-.btn-new:hover{background:#1a3678;}
-.notice-list{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08);}
-.notice-item{display:flex;align-items:center;padding:20px 24px;border-bottom:1px solid #eee;gap:16px;flex-wrap:wrap;}
-.notice-item:last-child{border-bottom:none;}
-.notice-item .cat{font-size:14px;font-weight:600;padding:6px 14px;border-radius:20px;background:#f0f0f0;white-space:nowrap;}
-.notice-item .cat.notice{background:rgba(33,69,154,.1);color:#21459a;}
-.notice-item .title{flex:1;font-size:18px;font-weight:600;min-width:200px;}
-.notice-item .date{font-size:15px;color:#888;white-space:nowrap;}
-.notice-item .actions{display:flex;gap:8px;}
-.notice-item .actions button{padding:10px 18px;border-radius:8px;border:none;font-size:15px;font-weight:600;cursor:pointer;}
-.btn-edit{background:#e8f0fe;color:#21459a;}
-.btn-edit:hover{background:#d0e0fc;}
-.btn-del{background:#fde8e8;color:#cf4a3c;}
-.btn-del:hover{background:#fcd0d0;}
-.empty{text-align:center;padding:60px;font-size:18px;color:#999;}
+/* 상단 바 */
+.admin-bar{background:var(--primary);color:#fff;padding:18px 0;}
+.admin-bar .wrap{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.admin-bar h1{font-size:22px;font-weight:700;}
+.admin-bar .user{display:flex;align-items:center;gap:12px;font-size:var(--t-body-sm);}
+.admin-bar button{background:#fff;color:var(--primary);border:none;padding:10px 20px;border-radius:var(--r-btn);font-size:var(--t-body-sm);font-weight:600;cursor:pointer;font-family:var(--font);}
+
+/* 툴바 */
+.toolbar{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;margin-bottom:24px;}
+.btn-new{display:inline-flex;align-items:center;gap:8px;background:var(--primary);color:#fff;border:none;padding:14px 28px;border-radius:var(--r-btn);font-size:var(--t-body-sm);font-weight:600;cursor:pointer;font-family:var(--font);box-shadow:0 4px 14px rgba(33,69,154,.22);}
+.btn-new:hover{background:var(--blue-hover);}
+
+/* 테이블 내 액션 버튼 */
+.actions{display:flex;gap:6px;}
+.actions button{padding:8px 16px;border-radius:var(--r-xs);border:none;font-size:var(--t-body-sm);font-weight:600;cursor:pointer;font-family:var(--font);}
+.btn-edit{background:rgba(33,69,154,.1);color:var(--primary);}
+.btn-edit:hover{background:rgba(33,69,154,.2);}
+.btn-del{background:rgba(207,74,60,.1);color:var(--alert);}
+.btn-del:hover{background:rgba(207,74,60,.2);}
 
 /* 에디터 화면 */
-.editor-box{display:none;background:#fff;border-radius:12px;padding:32px;box-shadow:0 2px 8px rgba(0,0,0,.08);}
-.editor-box h2{font-size:24px;font-weight:700;margin-bottom:24px;}
-.field{margin-bottom:20px;}
-.field label{display:block;font-size:18px;font-weight:600;margin-bottom:8px;}
-.field input,.field select{width:100%;padding:14px 16px;font-size:18px;border:2px solid #ddd;border-radius:10px;font-family:inherit;}
-.field input:focus,.field select:focus{outline:none;border-color:#21459a;}
+.editor-box{display:none;background:var(--paper);border:1px solid var(--hairline);border-radius:var(--r-lg);padding:48px;box-shadow:var(--sh-sm);}
+.editor-box h2{font-size:var(--t-headline);font-weight:700;margin-bottom:32px;}
+.field{margin-bottom:24px;}
+.field label{display:block;font-size:var(--t-body);font-weight:600;margin-bottom:8px;}
+.field input,.field select{width:100%;padding:14px 16px;font-size:var(--t-body);border:1px solid var(--hairline);border-radius:var(--r-sm);font-family:var(--font);background:var(--surface-1);transition:all .15s ease;}
+.field input:focus,.field select:focus{outline:none;border-color:var(--primary);background:#fff;box-shadow:0 0 0 3px rgba(33,69,154,.12);}
 #editor{height:350px;font-size:17px;line-height:1.8;}
 .editor-actions{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap;}
-.btn-save{background:#21459a;color:#fff;border:none;padding:16px 40px;border-radius:10px;font-size:18px;font-weight:700;cursor:pointer;}
-.btn-save:hover{background:#1a3678;}
-.btn-cancel{background:#eee;color:#333;border:none;padding:16px 32px;border-radius:10px;font-size:18px;font-weight:600;cursor:pointer;}
-.btn-cancel:hover{background:#ddd;}
+.btn-save{background:var(--primary);color:#fff;border:none;padding:14px 36px;border-radius:var(--r-btn);font-size:var(--t-body);font-weight:700;cursor:pointer;font-family:var(--font);box-shadow:0 4px 14px rgba(33,69,154,.22);}
+.btn-save:hover{background:var(--blue-hover);}
+.btn-cancel{background:var(--surface-1);color:var(--ink);border:1px solid var(--hairline);padding:14px 28px;border-radius:var(--r-btn);font-size:var(--t-body);font-weight:600;cursor:pointer;font-family:var(--font);}
+.btn-cancel:hover{background:var(--surface-2);}
 
 /* Quill 커스텀 */
-.ql-toolbar.ql-snow{border-radius:10px 10px 0 0;border-color:#ddd;}
-.ql-container.ql-snow{border-radius:0 0 10px 10px;border-color:#ddd;}
-.ql-editor img{max-width:100%;border-radius:8px;margin:12px 0;}
+.ql-toolbar.ql-snow{border-radius:var(--r-sm) var(--r-sm) 0 0;border-color:var(--hairline);}
+.ql-container.ql-snow{border-radius:0 0 var(--r-sm) var(--r-sm);border-color:var(--hairline);}
+.ql-editor img{max-width:100%;border-radius:var(--r-sm);margin:12px 0;}
 .ql-snow .ql-tooltip{z-index:100;}
 
-.loading{text-align:center;padding:40px;font-size:18px;color:#888;}
+.empty-row td{text-align:center;padding:60px 20px;color:var(--ink-muted);font-size:var(--t-body);}
 </style>
 </head>
-<body>
+<body data-page="notice">
 
 <div id="loginScreen" class="login-box">
   <h2>내일종합관리 공지사항 관리</h2>
@@ -75,23 +69,39 @@ body{font-family:'IBM Plex Sans KR','Pretendard',sans-serif;background:#f5f5f5;c
 </div>
 
 <div id="adminScreen" style="display:none;">
-  <div class="top-bar">
+<div id="site-header"></div>
+
+<section class="page-hero" style="padding-top:72px;padding-bottom:64px;">
+  <div class="wrap">
+    <div class="crumb">HOME <span>/</span> 공지사항 관리</div>
     <h1>공지사항 관리</h1>
-    <div class="user">
-      <span id="userEmail"></span>
-      <button onclick="doLogout()">로그아웃</button>
-    </div>
+    <p id="userEmail" style="font-size:var(--t-body-sm);color:var(--blue-light);margin-top:12px;cursor:pointer;" onclick="doLogout()" title="클릭하면 로그아웃"></p>
   </div>
-  <div class="container">
+</section>
+
+<section>
+  <div class="wrap">
     <!-- 목록 -->
     <div id="listView">
       <div class="toolbar">
-        <h2>공지사항 목록</h2>
+        <p style="font-size:var(--t-body-sm);color:var(--ink-muted);">전체 <b style="color:var(--ink);" id="totalCount">0</b>건 · 최신순</p>
         <button class="btn-new" onclick="showEditor()">+ 새 공지 작성</button>
       </div>
-      <div class="notice-list" id="noticeList">
-        <div class="loading">불러오는 중...</div>
-      </div>
+
+      <table class="board">
+        <thead>
+          <tr>
+            <th class="c">번호</th>
+            <th class="c hide-m">분류</th>
+            <th>제목</th>
+            <th class="c hide-m">작성일</th>
+            <th class="c">관리</th>
+          </tr>
+        </thead>
+        <tbody id="noticeBody">
+          <tr><td colspan="5" class="empty-row" style="text-align:center;padding:60px;color:var(--ink-muted);">불러오는 중...</td></tr>
+        </tbody>
+      </table>
     </div>
 
     <!-- 에디터 -->
@@ -120,7 +130,12 @@ body{font-family:'IBM Plex Sans KR','Pretendard',sans-serif;background:#f5f5f5;c
       </div>
     </div>
   </div>
+</section>
+
+<div id="site-footer"></div>
 </div>
+
+<script src="assets/site.js"></script>
 
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -146,7 +161,6 @@ var editingId = null;
 
 // HTML 내 모든 base64 이미지를 압축해서 교체한 HTML 반환
 function compressHtmlImages(html) {
-  // 모든 base64 이미지 src 추출
   var regex = /src="(data:image\/[^"]+)"/g;
   var matches = [];
   var m;
@@ -155,10 +169,8 @@ function compressHtmlImages(html) {
   }
   if (matches.length === 0) return Promise.resolve(html);
 
-  // 각 이미지 압축 (Blob URL 방식)
   var tasks = matches.map(function(dataUrl) {
     return new Promise(function(resolve) {
-      // base64 → Blob → Object URL (대용량 이미지 로드 안정성)
       var parts = dataUrl.split(',');
       var mime = parts[0].match(/:(.*?);/)[1];
       var binary = atob(parts[1]);
@@ -221,7 +233,6 @@ function initQuill() {
     }
   });
 
-  // 이미지 버튼: 파일 선택 → 삽입 (저장 시 압축됨)
   quill.getModule('toolbar').addHandler('image', function() {
     var input = document.createElement('input');
     input.type = 'file';
@@ -237,8 +248,6 @@ function initQuill() {
     };
     input.click();
   });
-
-  // 붙여넣기/드래그는 Quill 기본 동작 사용 (저장 시 압축됨)
 }
 
 // 로그인
@@ -250,7 +259,7 @@ function doLogin() {
 }
 
 function doLogout() {
-  auth.signOut();
+  if (confirm('로그아웃 하시겠습니까?')) auth.signOut();
 }
 
 // 인증 상태 감지
@@ -258,7 +267,7 @@ auth.onAuthStateChanged(function(user) {
   if (user) {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminScreen').style.display = 'block';
-    document.getElementById('userEmail').textContent = user.email;
+    document.getElementById('userEmail').textContent = user.email + ' (로그아웃)';
     initQuill();
     loadNotices();
   } else {
@@ -270,27 +279,43 @@ auth.onAuthStateChanged(function(user) {
 // 공지 목록 로드
 function loadNotices() {
   db.collection('notices').orderBy('createdAt', 'desc').get().then(function(snap) {
-    var list = document.getElementById('noticeList');
+    var body = document.getElementById('noticeBody');
+    var total = snap.size;
+    document.getElementById('totalCount').textContent = total;
+
     if (snap.empty) {
-      list.innerHTML = '<div class="empty">등록된 공지사항이 없습니다</div>';
+      body.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:60px;color:var(--ink-muted);">등록된 공지사항이 없습니다</td></tr>';
       return;
     }
+
     var html = '';
+    var num = total;
     snap.forEach(function(doc) {
       var d = doc.data();
-      var catClass = d.category === '공지' ? ' notice' : '';
+      var isNotice = d.category === '공지';
+      var catClass = isNotice ? ' notice' : '';
       var date = d.createdAt ? d.createdAt.toDate().toISOString().slice(0, 10) : '';
-      html += '<div class="notice-item">' +
-        '<span class="cat' + catClass + '">' + (d.category || '소식') + '</span>' +
-        '<span class="title">' + escHtml(d.title) + '</span>' +
-        '<span class="date">' + date + '</span>' +
-        '<span class="actions">' +
+
+      var isNew = false;
+      if (d.createdAt) {
+        var diff = Date.now() - d.createdAt.toDate().getTime();
+        isNew = diff < 7 * 24 * 60 * 60 * 1000;
+      }
+      var newBadge = isNew ? '<span class="b-new">N</span>' : '';
+
+      html += '<tr>' +
+        '<td class="c">' + (isNotice ? '<span class="b-cat notice">공지</span>' : '<span class="b-no">' + String(num).padStart(2, '0') + '</span>') + '</td>' +
+        '<td class="c hide-m"><span class="b-cat' + catClass + '">' + (d.category || '소식') + '</span></td>' +
+        '<td><span class="b-title">' + escHtml(d.title) + '</span>' + newBadge + '</td>' +
+        '<td class="c hide-m">' + date + '</td>' +
+        '<td class="c"><div class="actions">' +
           '<button class="btn-edit" onclick="editNotice(\'' + doc.id + '\')">수정</button>' +
           '<button class="btn-del" onclick="deleteNotice(\'' + doc.id + '\')">삭제</button>' +
-        '</span>' +
-      '</div>';
+        '</div></td>' +
+      '</tr>';
+      num--;
     });
-    list.innerHTML = html;
+    body.innerHTML = html;
   });
 }
 
@@ -344,18 +369,13 @@ function saveNotice() {
 
   if (!title) { alert('제목을 입력해주세요'); return; }
 
-  // 저장 버튼 비활성화
   var saveBtn = document.querySelector('.btn-save');
-  saveBtn.textContent = '압축 중...';
+  saveBtn.textContent = '저장 중...';
   saveBtn.disabled = true;
 
-  // HTML에서 이미지 압축 후 저장
   var rawHtml = quill.root.innerHTML;
-  var rawSizeKB = Math.round(new Blob([rawHtml]).size / 1024);
-  alert('원본 크기: ' + rawSizeKB + 'KB, 이미지 개수: ' + (rawHtml.match(/src="data:image/g) || []).length + '개\n압축을 시작합니다...');
   compressHtmlImages(rawHtml).then(function(content) {
     var sizeKB = Math.round(new Blob([content]).size / 1024);
-    alert('압축 후 크기: ' + sizeKB + 'KB');
     if (sizeKB > 900) {
       alert('내용이 너무 큽니다 (' + sizeKB + 'KB). 이미지 개수를 줄여주세요. (최대 약 900KB)');
       saveBtn.textContent = '저장';
