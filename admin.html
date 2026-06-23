@@ -144,6 +144,28 @@ var auth = firebase.auth();
 var quill = null;
 var editingId = null;
 
+// 이미지 압축 (최대 800px, JPEG 60%)
+function compressImage(file) {
+  return new Promise(function(resolve) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var img = new Image();
+      img.onload = function() {
+        var canvas = document.createElement('canvas');
+        var maxW = 800;
+        var w = img.width, h = img.height;
+        if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+        canvas.width = w;
+        canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.6));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 // Quill 초기화
 function initQuill() {
   if (quill) return;
@@ -161,6 +183,22 @@ function initQuill() {
         ['clean']
       ]
     }
+  });
+
+  // 이미지 삽입 시 압축 처리
+  quill.getModule('toolbar').addHandler('image', function() {
+    var input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = function() {
+      var file = input.files[0];
+      if (!file) return;
+      compressImage(file).then(function(dataUrl) {
+        var range = quill.getSelection(true);
+        quill.insertEmbed(range.index, 'image', dataUrl);
+      });
+    };
+    input.click();
   });
 }
 
@@ -267,6 +305,12 @@ function saveNotice() {
   var content = quill.root.innerHTML;
 
   if (!title) { alert('제목을 입력해주세요'); return; }
+
+  var sizeKB = Math.round(new Blob([content]).size / 1024);
+  if (sizeKB > 900) {
+    alert('내용이 너무 큽니다 (' + sizeKB + 'KB). 이미지를 줄이거나 개수를 줄여주세요. (최대 약 900KB)');
+    return;
+  }
 
   var data = {
     title: title,
