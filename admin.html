@@ -144,26 +144,45 @@ var auth = firebase.auth();
 var quill = null;
 var editingId = null;
 
-// 이미지 압축 (최대 800px, JPEG 60%)
-function compressImage(file) {
+// 이미지 압축 (최대 600px, JPEG 50%)
+function compressImage(src) {
   return new Promise(function(resolve) {
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      var img = new Image();
-      img.onload = function() {
-        var canvas = document.createElement('canvas');
-        var maxW = 800;
-        var w = img.width, h = img.height;
-        if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
-        canvas.width = w;
-        canvas.height = h;
-        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-        resolve(canvas.toDataURL('image/jpeg', 0.6));
-      };
-      img.src = e.target.result;
+    var img = new Image();
+    img.onload = function() {
+      var canvas = document.createElement('canvas');
+      var maxW = 600;
+      var w = img.width, h = img.height;
+      if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+      canvas.width = w;
+      canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', 0.5));
     };
-    reader.readAsDataURL(file);
+    if (typeof src === 'string') {
+      img.src = src;
+    } else {
+      var reader = new FileReader();
+      reader.onload = function(e) { img.src = e.target.result; };
+      reader.readAsDataURL(src);
+    }
   });
+}
+
+// 저장 전 에디터 내 모든 이미지 재압축
+function compressAllImages() {
+  var imgs = quill.root.querySelectorAll('img');
+  var tasks = [];
+  for (var i = 0; i < imgs.length; i++) {
+    (function(imgEl) {
+      var src = imgEl.getAttribute('src');
+      if (src && src.length > 50000) {
+        tasks.push(compressImage(src).then(function(compressed) {
+          imgEl.setAttribute('src', compressed);
+        }));
+      }
+    })(imgs[i]);
+  }
+  return tasks.length ? Promise.all(tasks) : Promise.resolve();
 }
 
 // Quill 초기화
@@ -329,36 +348,50 @@ function deleteNotice(id) {
 function saveNotice() {
   var title = document.getElementById('fieldTitle').value.trim();
   var category = document.getElementById('fieldCat').value;
-  var content = quill.root.innerHTML;
 
   if (!title) { alert('제목을 입력해주세요'); return; }
 
-  var sizeKB = Math.round(new Blob([content]).size / 1024);
-  if (sizeKB > 900) {
-    alert('내용이 너무 큽니다 (' + sizeKB + 'KB). 이미지를 줄이거나 개수를 줄여주세요. (최대 약 900KB)');
-    return;
-  }
+  // 저장 버튼 비활성화
+  var saveBtn = document.querySelector('.btn-save');
+  saveBtn.textContent = '압축 중...';
+  saveBtn.disabled = true;
 
-  var data = {
-    title: title,
-    category: category,
-    content: content,
-    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-  };
+  // 이미지 재압축 후 저장
+  compressAllImages().then(function() {
+    var content = quill.root.innerHTML;
+    var sizeKB = Math.round(new Blob([content]).size / 1024);
+    if (sizeKB > 900) {
+      alert('내용이 너무 큽니다 (' + sizeKB + 'KB). 이미지 개수를 줄여주세요. (최대 약 900KB)');
+      saveBtn.textContent = '저장';
+      saveBtn.disabled = false;
+      return;
+    }
 
-  var promise;
-  if (editingId) {
-    promise = db.collection('notices').doc(editingId).update(data);
-  } else {
-    data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-    promise = db.collection('notices').add(data);
-  }
+    var data = {
+      title: title,
+      category: category,
+      content: content,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
 
-  promise.then(function() {
-    hideEditor();
-    loadNotices();
-  }).catch(function(e) {
-    alert('저장 실패: ' + e.message);
+    var promise;
+    if (editingId) {
+      promise = db.collection('notices').doc(editingId).update(data);
+    } else {
+      data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+      promise = db.collection('notices').add(data);
+    }
+
+    promise.then(function() {
+      saveBtn.textContent = '저장';
+      saveBtn.disabled = false;
+      hideEditor();
+      loadNotices();
+    }).catch(function(e) {
+      saveBtn.textContent = '저장';
+      saveBtn.disabled = false;
+      alert('저장 실패: ' + e.message);
+    });
   });
 }
 </script>
