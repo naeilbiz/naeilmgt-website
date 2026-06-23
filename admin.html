@@ -340,8 +340,11 @@ function saveNotice() {
 
   // HTML에서 이미지 압축 후 저장
   var rawHtml = quill.root.innerHTML;
+  var rawSizeKB = Math.round(new Blob([rawHtml]).size / 1024);
+  alert('원본 크기: ' + rawSizeKB + 'KB, 이미지 개수: ' + (rawHtml.match(/src="data:image/g) || []).length + '개\n압축을 시작합니다...');
   compressHtmlImages(rawHtml).then(function(content) {
     var sizeKB = Math.round(new Blob([content]).size / 1024);
+    alert('압축 후 크기: ' + sizeKB + 'KB');
     if (sizeKB > 900) {
       alert('내용이 너무 큽니다 (' + sizeKB + 'KB). 이미지 개수를 줄여주세요. (최대 약 900KB)');
       saveBtn.textContent = '저장';
