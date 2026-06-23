@@ -155,11 +155,21 @@ function compressHtmlImages(html) {
   }
   if (matches.length === 0) return Promise.resolve(html);
 
-  // 각 이미지 압축
+  // 각 이미지 압축 (Blob URL 방식)
   var tasks = matches.map(function(dataUrl) {
     return new Promise(function(resolve) {
+      // base64 → Blob → Object URL (대용량 이미지 로드 안정성)
+      var parts = dataUrl.split(',');
+      var mime = parts[0].match(/:(.*?);/)[1];
+      var binary = atob(parts[1]);
+      var arr = new Uint8Array(binary.length);
+      for (var j = 0; j < binary.length; j++) arr[j] = binary.charCodeAt(j);
+      var blob = new Blob([arr], { type: mime });
+      var blobUrl = URL.createObjectURL(blob);
+
       var img = new Image();
       img.onload = function() {
+        URL.revokeObjectURL(blobUrl);
         var maxW = 400;
         var w = img.naturalWidth, h = img.naturalHeight;
         if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
@@ -175,9 +185,10 @@ function compressHtmlImages(html) {
         resolve({ original: dataUrl, compressed: out });
       };
       img.onerror = function() {
+        URL.revokeObjectURL(blobUrl);
         resolve({ original: dataUrl, compressed: dataUrl });
       };
-      img.src = dataUrl;
+      img.src = blobUrl;
     });
   });
 
