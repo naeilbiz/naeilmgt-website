@@ -176,9 +176,9 @@ function compressHtmlImages(html) {
         var c = document.createElement('canvas');
         c.width = w; c.height = h;
         c.getContext('2d').drawImage(img, 0, 0, w, h);
-        var q = 0.8;
+        var q = 0.92;
         var out = c.toDataURL('image/jpeg', q);
-        while (out.length > 500000 && q > 0.2) {
+        while (out.length > 700000 && q > 0.3) {
           q -= 0.05;
           out = c.toDataURL('image/jpeg', q);
         }
