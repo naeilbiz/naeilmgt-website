@@ -185,7 +185,7 @@ function initQuill() {
     }
   });
 
-  // 이미지 삽입 시 압축 처리
+  // 이미지 삽입 시 압축 처리 (버튼)
   quill.getModule('toolbar').addHandler('image', function() {
     var input = document.createElement('input');
     input.type = 'file';
@@ -199,6 +199,33 @@ function initQuill() {
       });
     };
     input.click();
+  });
+
+  // 복사+붙여넣기 / 드래그 이미지도 압축
+  quill.root.addEventListener('paste', function(e) {
+    var items = (e.clipboardData || {}).items || [];
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf('image') !== -1) {
+        e.preventDefault();
+        var file = items[i].getAsFile();
+        compressImage(file).then(function(dataUrl) {
+          var range = quill.getSelection(true);
+          quill.insertEmbed(range.index, 'image', dataUrl);
+        });
+        return;
+      }
+    }
+  });
+
+  quill.root.addEventListener('drop', function(e) {
+    var files = e.dataTransfer && e.dataTransfer.files;
+    if (files && files.length && files[0].type.indexOf('image') !== -1) {
+      e.preventDefault();
+      compressImage(files[0]).then(function(dataUrl) {
+        var range = quill.getSelection(true);
+        quill.insertEmbed(range.index, 'image', dataUrl);
+      });
+    }
   });
 }
 
