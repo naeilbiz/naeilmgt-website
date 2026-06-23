@@ -29,14 +29,13 @@
     <table class="board">
       <thead>
         <tr>
-          <th class="c">번호</th>
-          <th class="c hide-m">분류</th>
+          <th class="c">분류</th>
           <th>제목</th>
           <th class="c hide-m">작성일</th>
         </tr>
       </thead>
       <tbody id="noticeBody">
-        <tr><td colspan="4" style="text-align:center;padding:60px;color:var(--ink-muted);">불러오는 중...</td></tr>
+        <tr><td colspan="3" style="text-align:center;padding:60px;color:var(--ink-muted);">불러오는 중...</td></tr>
       </tbody>
     </table>
   </div>
@@ -67,7 +66,7 @@ db.collection('notices').orderBy('createdAt', 'desc').get().then(function(snap) 
   document.getElementById('totalCount').textContent = total;
 
   if (snap.empty) {
-    body.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:60px;color:var(--ink-muted);">등록된 공지사항이 없습니다</td></tr>';
+    body.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:60px;color:var(--ink-muted);">등록된 공지사항이 없습니다</td></tr>';
     return;
   }
 
@@ -88,8 +87,7 @@ db.collection('notices').orderBy('createdAt', 'desc').get().then(function(snap) 
     var newBadge = isNew ? '<span class="b-new">N</span>' : '';
 
     html += '<tr onclick="location.href=\'notice-view.html?id=' + doc.id + '\'">' +
-      '<td class="c">' + (isNotice ? '<span class="b-cat notice">공지</span>' : '<span class="b-no">' + String(num).padStart(2, '0') + '</span>') + '</td>' +
-      '<td class="c hide-m"><span class="b-cat' + catClass + '">' + (d.category || '소식') + '</span></td>' +
+      '<td class="c"><span class="b-cat' + catClass + '">' + (d.category || '소식') + '</span></td>' +
       '<td><span class="b-title">' + escHtml(d.title) + '</span>' + newBadge + '</td>' +
       '<td class="c hide-m">' + date + '</td>' +
     '</tr>';
