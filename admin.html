@@ -144,56 +144,50 @@ var auth = firebase.auth();
 var quill = null;
 var editingId = null;
 
-// File → 압축된 base64
-function compressFile(file) {
-  return new Promise(function(resolve) {
-    var reader = new FileReader();
-    reader.onload = function(e) { compressBase64(e.target.result).then(resolve); };
-    reader.readAsDataURL(file);
-  });
-}
-
-// base64 → 압축된 base64 (최대 600px, 반복 압축으로 200KB 이하)
-function compressBase64(dataUrl) {
-  return new Promise(function(resolve) {
-    var img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = function() {
-      var maxW = 600;
-      var w = img.naturalWidth, h = img.naturalHeight;
-      if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
-      var canvas = document.createElement('canvas');
-      canvas.width = w; canvas.height = h;
-      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      // 품질을 낮춰가며 200KB 이하로
-      var quality = 0.5;
-      var result = canvas.toDataURL('image/jpeg', quality);
-      while (result.length > 200000 && quality > 0.1) {
-        quality -= 0.1;
-        result = canvas.toDataURL('image/jpeg', quality);
-      }
-      resolve(result);
-    };
-    img.onerror = function() { resolve(dataUrl); };
-    img.src = dataUrl;
-  });
-}
-
-// 저장 전 에디터 내 모든 이미지 재압축
-function compressAllImages() {
-  var imgs = quill.root.querySelectorAll('img');
-  var tasks = [];
-  for (var i = 0; i < imgs.length; i++) {
-    (function(imgEl) {
-      var src = imgEl.getAttribute('src') || '';
-      if (src.indexOf('data:') === 0 && src.length > 200000) {
-        tasks.push(compressBase64(src).then(function(compressed) {
-          imgEl.setAttribute('src', compressed);
-        }));
-      }
-    })(imgs[i]);
+// HTML 내 모든 base64 이미지를 압축해서 교체한 HTML 반환
+function compressHtmlImages(html) {
+  // 모든 base64 이미지 src 추출
+  var regex = /src="(data:image\/[^"]+)"/g;
+  var matches = [];
+  var m;
+  while ((m = regex.exec(html)) !== null) {
+    if (m[1].length > 100000) matches.push(m[1]);
   }
-  return tasks.length ? Promise.all(tasks) : Promise.resolve();
+  if (matches.length === 0) return Promise.resolve(html);
+
+  // 각 이미지 압축
+  var tasks = matches.map(function(dataUrl) {
+    return new Promise(function(resolve) {
+      var img = new Image();
+      img.onload = function() {
+        var maxW = 400;
+        var w = img.naturalWidth, h = img.naturalHeight;
+        if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+        var c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        c.getContext('2d').drawImage(img, 0, 0, w, h);
+        var q = 0.4;
+        var out = c.toDataURL('image/jpeg', q);
+        while (out.length > 150000 && q > 0.05) {
+          q -= 0.05;
+          out = c.toDataURL('image/jpeg', q);
+        }
+        resolve({ original: dataUrl, compressed: out });
+      };
+      img.onerror = function() {
+        resolve({ original: dataUrl, compressed: dataUrl });
+      };
+      img.src = dataUrl;
+    });
+  });
+
+  return Promise.all(tasks).then(function(results) {
+    var out = html;
+    results.forEach(function(r) {
+      out = out.split(r.original).join(r.compressed);
+    });
+    return out;
+  });
 }
 
 // Quill 초기화
@@ -216,66 +210,24 @@ function initQuill() {
     }
   });
 
-  // Quill 클립보드: 붙여넣기된 이미지 가로채서 압축
-  quill.clipboard.addMatcher('IMG', function(node, delta) {
-    var src = node.getAttribute('src') || '';
-    if (src.indexOf('data:') === 0 && src.length > 200000) {
-      compressBase64(src).then(function(compressed) {
-        // 압축 후 교체
-        var imgs = quill.root.querySelectorAll('img[src^="data:"]');
-        for (var i = 0; i < imgs.length; i++) {
-          if (imgs[i].src.length > 200000) {
-            imgs[i].src = compressed;
-          }
-        }
-      });
-    }
-    return delta;
-  });
-
-  // 이미지 버튼: 파일 선택 → 압축 → 삽입
+  // 이미지 버튼: 파일 선택 → 삽입 (저장 시 압축됨)
   quill.getModule('toolbar').addHandler('image', function() {
     var input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
     input.onchange = function() {
       if (!input.files[0]) return;
-      compressFile(input.files[0]).then(function(dataUrl) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
         var range = quill.getSelection(true);
-        quill.insertEmbed(range.index, 'image', dataUrl);
-      });
+        quill.insertEmbed(range.index, 'image', e.target.result);
+      };
+      reader.readAsDataURL(input.files[0]);
     };
     input.click();
   });
 
-  // 붙여넣기 이미지 가로채기
-  quill.root.addEventListener('paste', function(e) {
-    var items = (e.clipboardData || {}).items || [];
-    for (var i = 0; i < items.length; i++) {
-      if (items[i].type.indexOf('image') !== -1) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        compressFile(items[i].getAsFile()).then(function(dataUrl) {
-          var range = quill.getSelection(true);
-          quill.insertEmbed(range.index, 'image', dataUrl);
-        });
-        return;
-      }
-    }
-  }, true);
-
-  // 드래그 이미지
-  quill.root.addEventListener('drop', function(e) {
-    var files = e.dataTransfer && e.dataTransfer.files;
-    if (files && files.length && files[0].type.indexOf('image') !== -1) {
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      compressFile(files[0]).then(function(dataUrl) {
-        var range = quill.getSelection(true);
-        quill.insertEmbed(range.index, 'image', dataUrl);
-      });
-    }
-  }, true);
+  // 붙여넣기/드래그는 Quill 기본 동작 사용 (저장 시 압축됨)
 }
 
 // 로그인
@@ -386,9 +338,9 @@ function saveNotice() {
   saveBtn.textContent = '압축 중...';
   saveBtn.disabled = true;
 
-  // 이미지 재압축 후 저장
-  compressAllImages().then(function() {
-    var content = quill.root.innerHTML;
+  // HTML에서 이미지 압축 후 저장
+  var rawHtml = quill.root.innerHTML;
+  compressHtmlImages(rawHtml).then(function(content) {
     var sizeKB = Math.round(new Blob([content]).size / 1024);
     if (sizeKB > 900) {
       alert('내용이 너무 큽니다 (' + sizeKB + 'KB). 이미지 개수를 줄여주세요. (최대 약 900KB)');
