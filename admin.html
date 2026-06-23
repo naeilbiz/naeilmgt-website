@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>공지사항 관리 — 내일종합관리</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet" />
+<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet" />
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'IBM Plex Sans KR','Pretendard',sans-serif;background:#f5f5f5;color:#1c1d22;}
+.top-bar{background:#21459a;color:#fff;padding:18px 32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.top-bar h1{font-size:22px;font-weight:700;}
+.top-bar .user{display:flex;align-items:center;gap:12px;font-size:16px;}
+.top-bar button{background:#fff;color:#21459a;border:none;padding:10px 20px;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;}
+.container{max-width:960px;margin:0 auto;padding:32px 20px;}
+
+/* 로그인 화면 */
+.login-box{text-align:center;padding:120px 20px;}
+.login-box h2{font-size:28px;margin-bottom:16px;}
+.login-box p{font-size:18px;color:#666;margin-bottom:32px;}
+.login-btn{background:#21459a;color:#fff;border:none;padding:18px 40px;border-radius:10px;font-size:20px;font-weight:700;cursor:pointer;}
+.login-btn:hover{background:#1a3678;}
+
+/* 목록 */
+.toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px;}
+.toolbar h2{font-size:24px;font-weight:700;}
+.btn-new{background:#21459a;color:#fff;border:none;padding:16px 32px;border-radius:10px;font-size:18px;font-weight:700;cursor:pointer;}
+.btn-new:hover{background:#1a3678;}
+.notice-list{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08);}
+.notice-item{display:flex;align-items:center;padding:20px 24px;border-bottom:1px solid #eee;gap:16px;flex-wrap:wrap;}
+.notice-item:last-child{border-bottom:none;}
+.notice-item .cat{font-size:14px;font-weight:600;padding:6px 14px;border-radius:20px;background:#f0f0f0;white-space:nowrap;}
+.notice-item .cat.notice{background:rgba(33,69,154,.1);color:#21459a;}
+.notice-item .title{flex:1;font-size:18px;font-weight:600;min-width:200px;}
+.notice-item .date{font-size:15px;color:#888;white-space:nowrap;}
+.notice-item .actions{display:flex;gap:8px;}
+.notice-item .actions button{padding:10px 18px;border-radius:8px;border:none;font-size:15px;font-weight:600;cursor:pointer;}
+.btn-edit{background:#e8f0fe;color:#21459a;}
+.btn-edit:hover{background:#d0e0fc;}
+.btn-del{background:#fde8e8;color:#cf4a3c;}
+.btn-del:hover{background:#fcd0d0;}
+.empty{text-align:center;padding:60px;font-size:18px;color:#999;}
+
+/* 에디터 화면 */
+.editor-box{display:none;background:#fff;border-radius:12px;padding:32px;box-shadow:0 2px 8px rgba(0,0,0,.08);}
+.editor-box h2{font-size:24px;font-weight:700;margin-bottom:24px;}
+.field{margin-bottom:20px;}
+.field label{display:block;font-size:18px;font-weight:600;margin-bottom:8px;}
+.field input,.field select{width:100%;padding:14px 16px;font-size:18px;border:2px solid #ddd;border-radius:10px;font-family:inherit;}
+.field input:focus,.field select:focus{outline:none;border-color:#21459a;}
+#editor{height:350px;font-size:17px;line-height:1.8;}
+.editor-actions{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap;}
+.btn-save{background:#21459a;color:#fff;border:none;padding:16px 40px;border-radius:10px;font-size:18px;font-weight:700;cursor:pointer;}
+.btn-save:hover{background:#1a3678;}
+.btn-cancel{background:#eee;color:#333;border:none;padding:16px 32px;border-radius:10px;font-size:18px;font-weight:600;cursor:pointer;}
+.btn-cancel:hover{background:#ddd;}
+
+/* Quill 커스텀 */
+.ql-toolbar.ql-snow{border-radius:10px 10px 0 0;border-color:#ddd;}
+.ql-container.ql-snow{border-radius:0 0 10px 10px;border-color:#ddd;}
+.ql-editor img{max-width:100%;border-radius:8px;margin:12px 0;}
+.ql-snow .ql-tooltip{z-index:100;}
+
+.loading{text-align:center;padding:40px;font-size:18px;color:#888;}
+</style>
+</head>
+<body>
+
+<div id="loginScreen" class="login-box">
+  <h2>내일종합관리 공지사항 관리</h2>
+  <p>관리자 계정으로 로그인해주세요</p>
+  <button class="login-btn" onclick="doLogin()">Google 로그인</button>
+</div>
+
+<div id="adminScreen" style="display:none;">
+  <div class="top-bar">
+    <h1>공지사항 관리</h1>
+    <div class="user">
+      <span id="userEmail"></span>
+      <button onclick="doLogout()">로그아웃</button>
+    </div>
+  </div>
+  <div class="container">
+    <!-- 목록 -->
+    <div id="listView">
+      <div class="toolbar">
+        <h2>공지사항 목록</h2>
+        <button class="btn-new" onclick="showEditor()">+ 새 공지 작성</button>
+      </div>
+      <div class="notice-list" id="noticeList">
+        <div class="loading">불러오는 중...</div>
+      </div>
+    </div>
+
+    <!-- 에디터 -->
+    <div id="editorView" class="editor-box">
+      <h2 id="editorTitle">새 공지 작성</h2>
+      <div class="field">
+        <label>분류</label>
+        <select id="fieldCat">
+          <option value="공지">공지</option>
+          <option value="서비스">서비스</option>
+          <option value="안전">안전</option>
+          <option value="소식">소식</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>제목</label>
+        <input type="text" id="fieldTitle" placeholder="제목을 입력하세요" />
+      </div>
+      <div class="field">
+        <label>내용</label>
+        <div id="editor"></div>
+      </div>
+      <div class="editor-actions">
+        <button class="btn-save" onclick="saveNotice()">저장</button>
+        <button class="btn-cancel" onclick="hideEditor()">취소</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<!-- Quill -->
+<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+
+<script>
+firebase.initializeApp({
+  apiKey: "AIzaSyAzsogD5a0pjVOi_nEL5x5OymlPkbxCIWM",
+  authDomain: "naeilmgt-website.firebaseapp.com",
+  projectId: "naeilmgt-website",
+  storageBucket: "naeilmgt-website.firebasestorage.app",
+  messagingSenderId: "327929187768",
+  appId: "1:327929187768:web:dc0c2038878d13d93c934d"
+});
+
+var db = firebase.firestore();
+var auth = firebase.auth();
+var quill = null;
+var editingId = null;
+
+// Quill 초기화
+function initQuill() {
+  if (quill) return;
+  quill = new Quill('#editor', {
+    theme: 'snow',
+    placeholder: '내용을 입력하세요...',
+    modules: {
+      toolbar: [
+        [{ 'header': [1, 2, 3, false] }],
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ 'color': [] }, { 'background': [] }],
+        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+        [{ 'align': [] }],
+        ['image', 'link'],
+        ['clean']
+      ]
+    }
+  });
+}
+
+// 로그인
+function doLogin() {
+  var provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider).catch(function(e) {
+    alert('로그인 실패: ' + e.message);
+  });
+}
+
+function doLogout() {
+  auth.signOut();
+}
+
+// 인증 상태 감지
+auth.onAuthStateChanged(function(user) {
+  if (user) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminScreen').style.display = 'block';
+    document.getElementById('userEmail').textContent = user.email;
+    initQuill();
+    loadNotices();
+  } else {
+    document.getElementById('loginScreen').style.display = 'block';
+    document.getElementById('adminScreen').style.display = 'none';
+  }
+});
+
+// 공지 목록 로드
+function loadNotices() {
+  db.collection('notices').orderBy('createdAt', 'desc').get().then(function(snap) {
+    var list = document.getElementById('noticeList');
+    if (snap.empty) {
+      list.innerHTML = '<div class="empty">등록된 공지사항이 없습니다</div>';
+      return;
+    }
+    var html = '';
+    snap.forEach(function(doc) {
+      var d = doc.data();
+      var catClass = d.category === '공지' ? ' notice' : '';
+      var date = d.createdAt ? d.createdAt.toDate().toISOString().slice(0, 10) : '';
+      html += '<div class="notice-item">' +
+        '<span class="cat' + catClass + '">' + (d.category || '소식') + '</span>' +
+        '<span class="title">' + escHtml(d.title) + '</span>' +
+        '<span class="date">' + date + '</span>' +
+        '<span class="actions">' +
+          '<button class="btn-edit" onclick="editNotice(\'' + doc.id + '\')">수정</button>' +
+          '<button class="btn-del" onclick="deleteNotice(\'' + doc.id + '\')">삭제</button>' +
+        '</span>' +
+      '</div>';
+    });
+    list.innerHTML = html;
+  });
+}
+
+function escHtml(s) {
+  var d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+// 에디터 표시
+function showEditor(id) {
+  editingId = id || null;
+  document.getElementById('listView').style.display = 'none';
+  document.getElementById('editorView').style.display = 'block';
+  document.getElementById('editorTitle').textContent = id ? '공지 수정' : '새 공지 작성';
+  document.getElementById('fieldTitle').value = '';
+  document.getElementById('fieldCat').value = '공지';
+  quill.setContents([]);
+}
+
+function hideEditor() {
+  document.getElementById('listView').style.display = 'block';
+  document.getElementById('editorView').style.display = 'none';
+  editingId = null;
+}
+
+// 수정
+function editNotice(id) {
+  db.collection('notices').doc(id).get().then(function(doc) {
+    if (!doc.exists) return;
+    var d = doc.data();
+    showEditor(id);
+    document.getElementById('fieldTitle').value = d.title || '';
+    document.getElementById('fieldCat').value = d.category || '공지';
+    quill.root.innerHTML = d.content || '';
+  });
+}
+
+// 삭제
+function deleteNotice(id) {
+  if (!confirm('정말 삭제하시겠습니까?')) return;
+  db.collection('notices').doc(id).delete().then(function() {
+    loadNotices();
+  });
+}
+
+// 저장
+function saveNotice() {
+  var title = document.getElementById('fieldTitle').value.trim();
+  var category = document.getElementById('fieldCat').value;
+  var content = quill.root.innerHTML;
+
+  if (!title) { alert('제목을 입력해주세요'); return; }
+
+  var data = {
+    title: title,
+    category: category,
+    content: content,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+
+  var promise;
+  if (editingId) {
+    promise = db.collection('notices').doc(editingId).update(data);
+  } else {
+    data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+    promise = db.collection('notices').add(data);
+  }
+
+  promise.then(function() {
+    hideEditor();
+    loadNotices();
+  }).catch(function(e) {
+    alert('저장 실패: ' + e.message);
+  });
+}
+</script>
+</body>
+</html>

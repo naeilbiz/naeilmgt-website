@@ -23,11 +23,7 @@
 <section>
   <div class="wrap">
     <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;margin-bottom:24px;">
-      <p style="font-size:var(--t-body-sm);color:var(--ink-muted);">전체 <b style="color:var(--ink);">6</b>건 · 최신순</p>
-      <div style="display:flex;gap:1px;background:var(--hairline);border:1px solid var(--hairline);">
-        <input type="text" placeholder="제목 검색" style="border:none;background:#fff;padding:11px 16px;font-family:var(--font);font-size:var(--t-body-sm);width:220px;" />
-        <button class="btn btn-secondary" style="min-height:auto;padding:11px 18px;padding-right:18px;">검색</button>
-      </div>
+      <p style="font-size:var(--t-body-sm);color:var(--ink-muted);">전체 <b style="color:var(--ink);" id="totalCount">0</b>건 · 최신순</p>
     </div>
 
     <table class="board">
@@ -39,57 +35,74 @@
           <th class="c hide-m">작성일</th>
         </tr>
       </thead>
-      <tbody>
-        <tr>
-          <td class="c"><span class="b-cat notice">공지</span></td>
-          <td class="c hide-m b-no">―</td>
-          <td><span class="b-title">2026년 정기 시설 점검 및 외벽 청소 예약 안내</span><span class="b-new">N</span></td>
-          <td class="c hide-m">2026-06-02</td>
-        </tr>
-        <tr>
-          <td class="c"><span class="b-cat notice">공지</span></td>
-          <td class="c hide-m b-no">―</td>
-          <td><span class="b-title">드론 외벽 청소 — 비행 승인·도로 점용 허가 무료 대행 서비스 시행</span><span class="b-new">N</span></td>
-          <td class="c hide-m">2026-05-28</td>
-        </tr>
-        <tr>
-          <td class="c b-no">04</td>
-          <td class="c hide-m"><span class="b-cat">서비스</span></td>
-          <td><span class="b-title">태양광 패널 정밀 세척 서비스 출시 — 발전 효율 최대 30% 회복</span></td>
-          <td class="c hide-m">2026-05-20</td>
-        </tr>
-        <tr>
-          <td class="c b-no">03</td>
-          <td class="c hide-m"><span class="b-cat">안전</span></td>
-          <td><span class="b-title">중대재해처벌법 대응 — 무인 안전 시공 가이드라인 안내</span></td>
-          <td class="c hide-m">2026-05-12</td>
-        </tr>
-        <tr>
-          <td class="c b-no">02</td>
-          <td class="c hide-m"><span class="b-cat">서비스</span></td>
-          <td><span class="b-title">친환경 방제 약제 전면 적용 — 어린이·반려동물 안심 방역</span></td>
-          <td class="c hide-m">2026-05-04</td>
-        </tr>
-        <tr>
-          <td class="c b-no">01</td>
-          <td class="c hide-m"><span class="b-cat">소식</span></td>
-          <td><span class="b-title">㈜내일종합관리 공식 홈페이지를 오픈하였습니다</span></td>
-          <td class="c hide-m">2026-04-28</td>
-        </tr>
+      <tbody id="noticeBody">
+        <tr><td colspan="4" style="text-align:center;padding:60px;color:var(--ink-muted);">불러오는 중...</td></tr>
       </tbody>
     </table>
-
-    <div class="pager">
-      <a href="#" aria-label="이전">‹</a>
-      <a href="#" class="on">1</a>
-      <a href="#">2</a>
-      <a href="#">3</a>
-      <a href="#" aria-label="다음">›</a>
-    </div>
   </div>
 </section>
 
 <div id="site-footer"></div>
 <script src="assets/site.js"></script>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script>
+firebase.initializeApp({
+  apiKey: "AIzaSyAzsogD5a0pjVOi_nEL5x5OymlPkbxCIWM",
+  authDomain: "naeilmgt-website.firebaseapp.com",
+  projectId: "naeilmgt-website",
+  storageBucket: "naeilmgt-website.firebasestorage.app",
+  messagingSenderId: "327929187768",
+  appId: "1:327929187768:web:dc0c2038878d13d93c934d"
+});
+
+var db = firebase.firestore();
+
+db.collection('notices').orderBy('createdAt', 'desc').get().then(function(snap) {
+  var body = document.getElementById('noticeBody');
+  var total = snap.size;
+  document.getElementById('totalCount').textContent = total;
+
+  if (snap.empty) {
+    body.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:60px;color:var(--ink-muted);">등록된 공지사항이 없습니다</td></tr>';
+    return;
+  }
+
+  var html = '';
+  var num = total;
+  snap.forEach(function(doc) {
+    var d = doc.data();
+    var isNotice = d.category === '공지';
+    var catClass = isNotice ? ' notice' : '';
+    var date = d.createdAt ? d.createdAt.toDate().toISOString().slice(0, 10) : '';
+
+    // 7일 이내면 N 표시
+    var isNew = false;
+    if (d.createdAt) {
+      var diff = Date.now() - d.createdAt.toDate().getTime();
+      isNew = diff < 7 * 24 * 60 * 60 * 1000;
+    }
+    var newBadge = isNew ? '<span class="b-new">N</span>' : '';
+
+    html += '<tr onclick="location.href=\'notice-view.html?id=' + doc.id + '\'">' +
+      '<td class="c">' + (isNotice ? '<span class="b-cat notice">공지</span>' : '<span class="b-no">' + String(num).padStart(2, '0') + '</span>') + '</td>' +
+      '<td class="c hide-m"><span class="b-cat' + catClass + '">' + (d.category || '소식') + '</span></td>' +
+      '<td><span class="b-title">' + escHtml(d.title) + '</span>' + newBadge + '</td>' +
+      '<td class="c hide-m">' + date + '</td>' +
+    '</tr>';
+    num--;
+  });
+  body.innerHTML = html;
+});
+
+function escHtml(s) {
+  var d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+</script>
 </body>
 </html>
