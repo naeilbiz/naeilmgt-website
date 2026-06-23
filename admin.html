@@ -58,6 +58,31 @@
 .ql-snow .ql-tooltip{z-index:100;}
 
 .empty-row td{text-align:center;padding:60px 20px;color:var(--ink-muted);font-size:var(--t-body);}
+
+/* 상세 보기 */
+.notice-detail{max-width:800px;margin:0 auto;}
+.notice-meta{display:flex;align-items:center;gap:16px;margin-bottom:32px;flex-wrap:wrap;}
+.notice-meta .cat{font-size:14px;font-weight:600;padding:6px 14px;border-radius:20px;background:#f0f0f0;white-space:nowrap;}
+.notice-meta .cat.notice{background:rgba(33,69,154,.1);color:#21459a;}
+.notice-meta .date{font-size:var(--t-body-sm);color:var(--ink-subtle);}
+.notice-title{font-size:var(--t-headline);font-weight:700;line-height:1.4;letter-spacing:-0.6px;margin-bottom:40px;padding-bottom:32px;border-bottom:1px solid var(--hairline);}
+.notice-content{font-size:var(--t-body-lg);line-height:1.9;color:var(--ink);}
+.notice-content img{max-width:100%;border-radius:var(--r-md);margin:20px 0;}
+.notice-content h1,.notice-content h2,.notice-content h3{margin:28px 0 14px;line-height:1.4;}
+.notice-content ul,.notice-content ol{margin:14px 0;padding-left:24px;}
+.notice-content li{margin-bottom:8px;}
+.notice-content strong{font-weight:700;}
+.notice-content em{font-style:italic;}
+.notice-content a{color:var(--primary);text-decoration:underline;}
+.detail-actions{display:flex;gap:12px;margin-top:48px;padding-top:32px;border-top:1px solid var(--hairline);}
+.detail-actions .btn-edit{padding:14px 32px;border-radius:var(--r-btn);font-size:var(--t-body);font-weight:700;cursor:pointer;font-family:var(--font);background:rgba(33,69,154,.1);color:var(--primary);border:none;}
+.detail-actions .btn-edit:hover{background:rgba(33,69,154,.2);}
+.detail-actions .btn-del{padding:14px 32px;border-radius:var(--r-btn);font-size:var(--t-body);font-weight:700;cursor:pointer;font-family:var(--font);background:rgba(207,74,60,.1);color:var(--alert);border:none;}
+.detail-actions .btn-del:hover{background:rgba(207,74,60,.2);}
+.back-btn{display:inline-flex;align-items:center;gap:8px;font-size:var(--t-body);font-weight:600;color:var(--primary);margin-bottom:32px;cursor:pointer;}
+.back-btn:hover{color:var(--blue-60);}
+.board .b-title{cursor:pointer;}
+.board .b-title:hover{color:var(--primary);text-decoration:underline;}
 </style>
 </head>
 <body>
@@ -95,13 +120,18 @@
             <th class="c">분류</th>
             <th>제목</th>
             <th class="c hide-m">작성일</th>
-            <th class="c">관리</th>
           </tr>
         </thead>
         <tbody id="noticeBody">
-          <tr><td colspan="5" class="empty-row" style="text-align:center;padding:60px;color:var(--ink-muted);">불러오는 중...</td></tr>
+          <tr><td colspan="3" class="empty-row" style="text-align:center;padding:60px;color:var(--ink-muted);">불러오는 중...</td></tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- 상세 보기 -->
+    <div id="detailView" style="display:none;">
+      <div class="back-btn" onclick="hideDetail()">← 목록으로 돌아가기</div>
+      <div class="notice-detail" id="detailContent"></div>
     </div>
 
     <!-- 에디터 -->
@@ -281,7 +311,7 @@ function loadNotices() {
     document.getElementById('totalCount').textContent = total;
 
     if (snap.empty) {
-      body.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:60px;color:var(--ink-muted);">등록된 공지사항이 없습니다</td></tr>';
+      body.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:60px;color:var(--ink-muted);">등록된 공지사항이 없습니다</td></tr>';
       return;
     }
 
@@ -302,12 +332,8 @@ function loadNotices() {
 
       html += '<tr>' +
         '<td class="c"><span class="b-cat' + catClass + '">' + (d.category || '소식') + '</span></td>' +
-        '<td><span class="b-title">' + escHtml(d.title) + '</span>' + newBadge + '</td>' +
+        '<td><span class="b-title" onclick="showDetail(\'' + doc.id + '\')">' + escHtml(d.title) + '</span>' + newBadge + '</td>' +
         '<td class="c hide-m">' + date + '</td>' +
-        '<td class="c"><div class="actions">' +
-          '<button class="btn-edit" onclick="editNotice(\'' + doc.id + '\')">수정</button>' +
-          '<button class="btn-del" onclick="deleteNotice(\'' + doc.id + '\')">삭제</button>' +
-        '</div></td>' +
       '</tr>';
       num--;
     });
@@ -319,6 +345,49 @@ function escHtml(s) {
   var d = document.createElement('div');
   d.textContent = s;
   return d.innerHTML;
+}
+
+// 상세 보기
+function showDetail(id) {
+  document.getElementById('listView').style.display = 'none';
+  document.getElementById('detailView').style.display = 'block';
+  var el = document.getElementById('detailContent');
+  el.innerHTML = '<div style="text-align:center;padding:80px 0;color:var(--ink-muted);">불러오는 중...</div>';
+
+  db.collection('notices').doc(id).get().then(function(doc) {
+    if (!doc.exists) {
+      el.innerHTML = '<div style="text-align:center;padding:80px 0;color:var(--ink-muted);">존재하지 않는 공지사항입니다</div>';
+      return;
+    }
+    var d = doc.data();
+    var catClass = d.category === '공지' ? ' notice' : '';
+    var date = d.createdAt ? d.createdAt.toDate().toISOString().slice(0, 10) : '';
+
+    el.innerHTML =
+      '<div class="notice-meta">' +
+        '<span class="cat' + catClass + '">' + (d.category || '소식') + '</span>' +
+        '<span class="date">' + date + '</span>' +
+      '</div>' +
+      '<h2 class="notice-title">' + escHtml(d.title) + '</h2>' +
+      '<div class="notice-content">' + d.content + '</div>' +
+      '<div class="detail-actions">' +
+        '<button class="btn-edit" onclick="editNotice(\'' + doc.id + '\')">수정</button>' +
+        '<button class="btn-del" onclick="deleteNoticeFromDetail(\'' + doc.id + '\')">삭제</button>' +
+      '</div>';
+  });
+}
+
+function hideDetail() {
+  document.getElementById('detailView').style.display = 'none';
+  document.getElementById('listView').style.display = 'block';
+}
+
+function deleteNoticeFromDetail(id) {
+  if (!confirm('정말 삭제하시겠습니까?')) return;
+  db.collection('notices').doc(id).delete().then(function() {
+    hideDetail();
+    loadNotices();
+  });
 }
 
 // 에디터 표시
@@ -343,6 +412,7 @@ function editNotice(id) {
   db.collection('notices').doc(id).get().then(function(doc) {
     if (!doc.exists) return;
     var d = doc.data();
+    document.getElementById('detailView').style.display = 'none';
     showEditor(id);
     document.getElementById('fieldTitle').value = d.title || '';
     document.getElementById('fieldCat').value = d.category || '공지';
