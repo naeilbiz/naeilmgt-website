@@ -81,8 +81,8 @@
 .detail-actions .btn-del:hover{background:rgba(207,74,60,.2);}
 .back-btn{display:inline-flex;align-items:center;gap:8px;font-size:var(--t-body);font-weight:600;color:var(--primary);margin-bottom:32px;cursor:pointer;}
 .back-btn:hover{color:var(--blue-60);}
-.board .b-title{cursor:pointer;}
-.board .b-title:hover{color:var(--primary);text-decoration:underline;}
+.board tbody tr{cursor:pointer;}
+.board tbody tr:hover{background:var(--surface-1);}
 </style>
 </head>
 <body>
@@ -330,9 +330,9 @@ function loadNotices() {
       }
       var newBadge = isNew ? '<span class="b-new">N</span>' : '';
 
-      html += '<tr>' +
+      html += '<tr onclick="showDetail(\'' + doc.id + '\')">' +
         '<td class="c"><span class="b-cat' + catClass + '">' + (d.category || '소식') + '</span></td>' +
-        '<td><span class="b-title" onclick="showDetail(\'' + doc.id + '\')">' + escHtml(d.title) + '</span>' + newBadge + '</td>' +
+        '<td><span class="b-title">' + escHtml(d.title) + '</span>' + newBadge + '</td>' +
         '<td class="c hide-m">' + date + '</td>' +
       '</tr>';
       num--;
@@ -347,8 +347,25 @@ function escHtml(s) {
   return d.innerHTML;
 }
 
+// 현재 뷰 상태
+var currentView = 'list';
+history.replaceState({ view: 'list' }, '');
+
+// 브라우저 뒤로가기 처리
+window.addEventListener('popstate', function() {
+  goToList();
+});
+
+function goToList() {
+  document.getElementById('listView').style.display = 'block';
+  document.getElementById('detailView').style.display = 'none';
+  document.getElementById('editorView').style.display = 'none';
+  currentView = 'list';
+}
+
 // 상세 보기
 function showDetail(id) {
+  history.pushState({ view: 'detail', id: id }, '');
   document.getElementById('listView').style.display = 'none';
   document.getElementById('detailView').style.display = 'block';
   var el = document.getElementById('detailContent');
@@ -378,14 +395,15 @@ function showDetail(id) {
 }
 
 function hideDetail() {
-  document.getElementById('detailView').style.display = 'none';
-  document.getElementById('listView').style.display = 'block';
+  goToList();
+  history.replaceState({ view: 'list' }, '');
 }
 
 function deleteNoticeFromDetail(id) {
   if (!confirm('정말 삭제하시겠습니까?')) return;
   db.collection('notices').doc(id).delete().then(function() {
-    hideDetail();
+    goToList();
+    history.replaceState({ view: 'list' }, '');
     loadNotices();
   });
 }
@@ -393,7 +411,12 @@ function deleteNoticeFromDetail(id) {
 // 에디터 표시
 function showEditor(id) {
   editingId = id || null;
+  if (currentView === 'list') {
+    history.pushState({ view: 'editor' }, '');
+  }
+  currentView = 'editor';
   document.getElementById('listView').style.display = 'none';
+  document.getElementById('detailView').style.display = 'none';
   document.getElementById('editorView').style.display = 'block';
   document.getElementById('editorTitle').textContent = id ? '공지 수정' : '새 공지 작성';
   document.getElementById('fieldTitle').value = '';
@@ -402,9 +425,9 @@ function showEditor(id) {
 }
 
 function hideEditor() {
-  document.getElementById('listView').style.display = 'block';
-  document.getElementById('editorView').style.display = 'none';
   editingId = null;
+  goToList();
+  history.replaceState({ view: 'list' }, '');
 }
 
 // 수정
@@ -467,7 +490,8 @@ function saveNotice() {
     promise.then(function() {
       saveBtn.textContent = '저장';
       saveBtn.disabled = false;
-      hideEditor();
+      goToList();
+      history.replaceState({ view: 'list' }, '');
       loadNotices();
     }).catch(function(e) {
       saveBtn.textContent = '저장';
