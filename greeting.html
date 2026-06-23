@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>인사말 — 내일종합관리</title>
+<meta name="ext-resource-dependency" content="assets/ci.png" data-resource-id="ci" />
+<template id="__bundler_thumbnail" data-bg-color="#fbfaf7">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#fbfaf7"/>
+    <g transform="translate(520,300)">
+      <rect x="0" y="0" width="22" height="120" rx="6" fill="#21459a"/>
+      <rect x="34" y="20" width="22" height="100" rx="6" fill="#1c1d22"/>
+      <rect x="68" y="20" width="22" height="100" rx="6" fill="#1c1d22"/>
+    </g>
+    <text x="600" y="500" text-anchor="middle" font-family="sans-serif" font-size="48" font-weight="800" fill="#1c1d22">내일종합관리</text>
+    <text x="600" y="552" text-anchor="middle" font-family="sans-serif" font-size="24" fill="#5f6168">인사말</text>
+  </svg>
+</template>
+<link rel="stylesheet" href="assets/carbon.css" />
+<style>
+/* 인사말 — 슬로건 + 2단 레이아웃 */
+.greet-slogan{text-align:center;padding:96px 0 0;}
+.greet-slogan .slg{font-size:52px;font-weight:800;letter-spacing:-1.5px;color:var(--primary);line-height:1.15;}
+.greet-slogan .intro{margin-top:26px;font-size:var(--t-body-lg);font-weight:400;color:var(--ink-muted);line-height:1.75;}
+.greet-slogan .intro b{color:var(--ink);font-weight:600;}
+
+.greet-2col{padding:72px 0 104px;}
+.greet-2col .grid{display:grid;grid-template-columns:1.3fr 0.78fr;gap:60px;align-items:start;}
+.greet-2col .pic img{width:100%;height:auto;max-height:520px;object-fit:cover;display:block;border-radius:var(--r-md);box-shadow:var(--sh-md);}
+.greet-2col .pic{order:2;}
+.greet-2col .body{padding-top:14px;order:1;}
+.greet-h{font-size:31px;font-weight:800;letter-spacing:-0.8px;line-height:1.4;color:var(--ink);display:inline;
+  background:linear-gradient(transparent 56%, rgba(33,69,154,.2) 56%);padding:0 4px;box-decoration-break:clone;-webkit-box-decoration-break:clone;}
+.greet-h b{color:var(--primary);font-weight:800;}
+.greet-2col .body p{font-size:var(--t-body);color:var(--ink-muted);line-height:2.35;margin-top:28px;}
+.greet-2col .body p.hi{margin-top:36px;color:var(--ink);font-weight:500;}
+.greet-2col .body p b{color:var(--ink);font-weight:700;}
+.greet-sign{margin-top:40px;font-size:var(--t-card-title);font-weight:700;color:var(--ink);letter-spacing:-0.3px;}
+.greet-sign span{font-size:var(--t-body-sm);font-weight:500;color:var(--ink-muted);margin-right:10px;letter-spacing:0;}
+@media (max-width:1056px){
+  .greet-slogan{padding-top:64px;}
+  .greet-slogan .slg{font-size:38px;}
+  .greet-2col{padding:48px 0 64px;}
+  .greet-2col .grid{grid-template-columns:1fr;gap:36px;}
+}
+@media (max-width:560px){
+  .greet-slogan .slg{font-size:30px;}
+}
+</style>
+</head>
+<body data-page="company">
+<div id="site-header"></div>
+
+<section class="page-hero">
+  <div class="wrap">
+    <div class="crumb">HOME <span>/</span> 기업정보 <span>/</span> 인사말</div>
+    <h1>인사말</h1>
+  </div>
+</section>
+
+<!-- 슬로건 -->
+<div class="greet-slogan">
+  <div class="wrap">
+    <div class="slg">내일종합관리를 찾아주신 고객 여러분, 반갑습니다.</div>
+    <p class="intro">오늘날의 건축물 관리는 단순 인력 투입을 넘어, 자산 가치의 극대화와 완벽한 현장 안전성을 동시에 확보하는 <b>스마트 지능형 관리 시대</b>로 진입했습니다.</p>
+  </div>
+</div>
+
+<!-- 2단: 이미지 + 인사말 -->
+<div class="greet-2col">
+  <div class="wrap">
+    <div class="grid">
+      <div class="pic">
+        <img src="assets/greeting.png" alt="내일종합관리 오피스 전경" />
+      </div>
+      <div class="body">
+        <span class="greet-h">함께의 가치를 아는 기업 <b>‘내일종합관리’</b></span>
+
+        <p class="hi">저희 내일종합관리는 이러한 현장의 난제를 정면으로 해결하고자, 첨단 산업용 드론 인프라와 체계적인 종합 관리 시스템을 융합한 혁신적인 솔루션을 선보이고 있습니다.<br />드론 고압 세척 공법을 통해 <b>중대재해 리스크를 원천 차단(0%)</b>하고, 자재별 맞춤형 친환경 세제와 고도화된 기술력으로 사각지대까지 신축 건물처럼 깨끗하게 복원합니다.</p>
+
+        <p class="hi">건축물 정기 시설 관리, 방역에 이르기까지 건물의 수명을 늘리는 올인원 종합 관리 프로세스를 가동하여 매일 최상의 건축물 컨디션을 유지합니다.<br />‘내일’을 생각하는 마음으로 고객의 소중한 자산 가치를 더욱 빛나게 만들며, 언제나 신뢰할 수 있는 가장 든든한 비즈니스 파트너로서 함께 나아가겠습니다.</p>
+
+        <div class="greet-sign" style="font-size:16px;">내일종합관리 대표이사</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="site-footer"></div>
+<script src="assets/site.js"></script>
+</body>
+</html>

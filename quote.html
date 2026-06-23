@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>견적문의 — 내일종합관리</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/carbon.css" />
+</head>
+<body data-page="quote">
+<div id="site-header"></div>
+
+<section class="page-hero" style="padding-top:72px;padding-bottom:64px;">
+  <div class="wrap">
+    <div class="crumb">HOME <span>/</span> 견적문의</div>
+    <h1>견적 및 문의</h1>
+    <p>지금, 귀하의 건물에 딱 맞는 맞춤형 견적을 받아보세요.<br />층수·대략적인 면적 등을 함께 적어주시면 더 정확한 상담이 가능합니다.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="quote-grid">
+      <!-- Form -->
+      <form class="quote-form" id="quoteForm">
+        <div class="field-row">
+          <div class="field">
+            <label>회사명 / 담당자명 <span class="req">*</span></label>
+            <input type="text" placeholder="예) ㈜내일 / 홍길동" required />
+          </div>
+          <div class="field">
+            <label>연락처 <span class="req">*</span></label>
+            <input type="tel" placeholder="010-0000-0000" required />
+          </div>
+        </div>
+        <div class="field">
+          <label>건물 소재지 (지역) <span class="req">*</span></label>
+          <input type="text" placeholder="예) 인천 계양구" required />
+        </div>
+        <div class="field">
+          <label>문의 유형</label>
+          <div class="radio-plain">
+            <span class="rp"><input type="radio" name="kind" id="k1" checked /><label for="k1">드론 외벽 청소</label></span>
+            <span class="rp"><input type="radio" name="kind" id="k2" /><label for="k2">건축물 정기 종합관리</label></span>
+            <span class="rp"><input type="radio" name="kind" id="k3" /><label for="k3">방역</label></span>
+            <span class="rp"><input type="radio" name="kind" id="k4" /><label for="k4">기타 문의</label></span>
+          </div>
+        </div>
+        <div class="field">
+          <label>문의 내용</label>
+          <textarea placeholder="층수, 대략적인 면적 등을 적어주시면 더 정확한 상담이 가능합니다."></textarea>
+        </div>
+
+        <!-- 개인정보 동의 -->
+        <div class="field" id="consent">
+          <label>개인정보 수집 및 이용 동의 <span class="req">*</span></label>
+          <div class="consent-box">
+            <h5>개인정보 수집 및 이용 동의</h5>
+            <p>회사는 상담 문의, 견적 산출 및 서비스 제공을 위하여 아래와 같이 개인정보를 수집·이용합니다.</p>
+            <table>
+              <tr><td>수집·이용 목적</td><td>상담 문의 응대, 견적 안내, 서비스 일정 조율, 고객 관리</td></tr>
+              <tr><td>수집 항목</td><td>성명, 연락처, 주소 또는 작업 희망 장소, 문의 내용</td></tr>
+              <tr><td>보유·이용 기간</td><td>상담 및 서비스 제공 완료 후 1년 또는 관련 법령에 따른 보관 기간까지</td></tr>
+            </table>
+            <p>귀하는 개인정보 수집 및 이용에 대한 동의를 거부할 권리가 있습니다. 다만, 동의하지 않을 경우 상담·견적 안내 및 서비스 제공이 제한될 수 있습니다.</p>
+          </div>
+          <div class="agree-row">
+            <span class="ar"><input type="radio" name="agree" id="agreeY" value="y" /><label for="agreeY">동의함</label></span>
+            <span class="ar"><input type="radio" name="agree" id="agreeN" value="n" /><label for="agreeN">동의하지 않음</label></span>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary quote-submit btn-disabled" id="submitBtn" disabled>무료 상담 신청하기<svg class="ico" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.3"/></svg></button>
+        <p style="font-size:var(--t-caption);color:var(--ink-subtle);margin-top:14px;line-height:1.5;">※ '동의함'을 선택해야 신청 버튼이 활성화됩니다. 제출 시 관리자 이메일로 즉시 알림이 발송되도록 연동할 수 있습니다.</p>
+      </form>
+
+      <!-- Side -->
+      <aside class="quote-side">
+        <h3>견적 및 문의</h3>
+        <p style="color:var(--inverse-ink-muted);font-size:var(--t-body-sm);">전화 또는 이메일로도 편하게 문의해 주세요.</p>
+        <div class="contact-list">
+          <div class="contact-item">
+            <div class="ci-lbl">대표 번호</div>
+            <div class="ci-val">010-3378-0078</div>
+            <div class="ci-sub">대표전화 032-545-8740 · 팩스 032-329-1638</div>
+          </div>
+          <div class="contact-item">
+            <div class="ci-lbl">이메일</div>
+            <div class="ci-val">naeilbiz@gmail.com</div>
+            <div class="ci-sub">※ 자체 도메인 메일(contact@naeilbiz.com) 연동 권장</div>
+          </div>
+          <div class="contact-item">
+            <div class="ci-lbl">본사 위치</div>
+            <div class="ci-val">인천 계양구 임학안로28번길 4, 태경빌딩 201호</div>
+            <div class="ci-sub">임학역 4번 출구 도보 6분</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+<script src="assets/site.js"></script>
+<script>
+(function(){
+  var form=document.getElementById('quoteForm');
+  var btn=document.getElementById('submitBtn');
+  var yes=document.getElementById('agreeY');
+  var no=document.getElementById('agreeN');
+  function sync(){
+    var ok=yes.checked;
+    btn.disabled=!ok;
+    btn.classList.toggle('btn-disabled',!ok);
+  }
+  yes.addEventListener('change',sync);
+  no.addEventListener('change',sync);
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    if(!yes.checked) return;
+    alert('무료 상담 신청이 접수되었습니다.\\n빠른 시일 내에 연락드리겠습니다. (데모 화면)');
+    form.reset();
+    sync();
+  });
+})();
+</script>
+</body>
+</html>
