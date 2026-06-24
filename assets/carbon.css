@@ -396,6 +396,7 @@ section{padding:104px 0;}
 .fi-row:last-child{border-bottom:none;}
 .fi{font-size:var(--t-body-sm);color:#fff;display:flex;gap:14px;align-items:baseline;}
 .fi span{color:var(--ink-subtle);min-width:72px;flex:none;font-size:var(--t-caption);letter-spacing:0.4px;}
+.fi b{color:#fff;min-width:72px;flex:none;font-size:var(--t-body-sm);font-weight:700;letter-spacing:0.2px;}
 .foot-brand .name{font-size:20px;font-weight:700;color:#fff;letter-spacing:-0.3px;}
 .foot-brand .name b{font-weight:500;color:var(--ink-subtle);font-size:12px;}
 .foot-brand .biz{font-size:var(--t-body-sm);color:var(--inverse-ink-muted);line-height:2;margin-top:22px;}

@@ -62,9 +62,9 @@
       '</div>'+
       '<div class="foot-info">'+
         '<div class="fi-row fi-row--3">'+
-          '<div class="fi"><span>대표전화</span>032-545-8740 / 010-3378-0078</div>'+
-          '<div class="fi"><span>팩스</span>032-329-1638</div>'+
-          '<div class="fi"><span>이메일</span>naeilbiz@gmail.com</div>'+
+          '<div class="fi"><b>대표전화</b>032-545-8740 / 010-3378-0078</div>'+
+          '<div class="fi"><b>팩스</b>032-329-1638</div>'+
+          '<div class="fi"><b>이메일</b>cs@naeilbiz.co.kr</div>'+
         '</div>'+
       '</div>'+
     '</div>'+
