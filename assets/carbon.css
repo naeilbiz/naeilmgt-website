@@ -439,7 +439,8 @@ section{padding:104px 0;}
   section{padding:64px 0;}
   .gnb,.nav-tel,.utility-left{display:none;}
   .hamb{display:flex;}
-  .brand-logo{height:32px;}
+  .brand-logo{height:48px;}
+  .nav-right .btn{font-size:12px;padding:10px 14px;min-height:36px;gap:6px;}
   .whw-grid,.svc-grid,.values{grid-template-columns:1fr;}
   .safety ul{grid-template-columns:1fr;}
   .field-row{grid-template-columns:1fr;}
