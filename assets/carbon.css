@@ -439,8 +439,8 @@ section{padding:104px 0;}
   section{padding:64px 0;}
   .gnb,.nav-tel,.utility-left{display:none;}
   .hamb{display:flex;}
-  .brand-logo{height:48px;}
-  .nav-right .btn{font-size:12px;padding:10px 14px;min-height:36px;gap:6px;}
+  .brand-logo{height:58px;}
+  .nav-right .btn{font-size:11px;padding:8px 12px;min-height:32px;gap:5px;}
   .whw-grid,.svc-grid,.values{grid-template-columns:1fr;}
   .safety ul{grid-template-columns:1fr;}
   .field-row{grid-template-columns:1fr;}
@@ -454,7 +454,10 @@ section{padding:104px 0;}
 @media (max-width:560px){
   :root{--t-display-xl:32px;--t-display-lg:28px;--t-display-md:24px;--t-headline:22px;--t-card-title:18px;--t-subhead:16px;--pad-x:16px;}
   section{padding:48px 0;}
-  .stat-grid,.merit-grid,.foot-grid{grid-template-columns:1fr;}
+  .stat-grid{grid-template-columns:1fr!important;display:flex;flex-direction:row;gap:10px;}
+  .stat-grid .stat{flex:1;min-width:0;}
+  .merit-grid{grid-template-columns:1fr!important;}
+  .foot-grid{grid-template-columns:1fr;}
   .quote-form,.quote-side{padding:24px 18px;}
   .page-hero{padding:56px 0 48px;}
   .page-hero h1{font-size:28px;}
@@ -475,10 +478,12 @@ section{padding:104px 0;}
   /* WHW 그리드 */
   .whw-cell{padding:28px 22px;}
   .whw-q{font-size:18px;min-height:auto;}
-  /* 통계 */
-  .stat{padding:28px 22px 32px;}
-  .stat .big{font-size:44px;}
-  .stat .big sup{font-size:18px;}
+  /* 통계 (가로 배치) */
+  .stat{padding:16px 12px 18px;}
+  .stat .arr{font-size:14px;margin-bottom:8px;}
+  .stat .big{font-size:28px;letter-spacing:-1px;}
+  .stat .big sup{font-size:12px;}
+  .stat .cap{font-size:11px;margin-top:10px;line-height:1.4;}
   /* 비전/가치 */
   .vision-quote{font-size:22px;}
   .value{padding:28px 22px;}
@@ -511,4 +516,13 @@ section{padding:104px 0;}
   /* 탭 */
   .tabs{gap:4px;padding:4px;}
   .tab{padding:10px 16px;font-size:14px;}
+  /* 비즈니스 페이지 소개 텍스트 */
+  .panel-intro h3{font-size:18px;line-height:1.6;letter-spacing:-0.3px;}
+  .panel-intro h3 br{display:none;}
+  /* 서비스 그리드 카드 */
+  .svc{padding:24px 20px;}
+  .svc h4{font-size:16px;margin:12px 0 12px;}
+  /* 드론 WHY US 박스 */
+  [style*="padding:64px 48px"]{padding:32px 20px!important;}
+  [style*="padding:64px 48px"] h3{font-size:20px!important;margin-bottom:28px!important;}
 }
