@@ -4,7 +4,7 @@
    ============================================================ */
 (function(){
   var ARROW = '<svg class="ico" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.3"/></svg>';
-  var CI = (window.__resources && window.__resources.ci) || 'assets/ci.png';
+  var CI = (window.__resources && window.__resources.ci) || 'assets/ci-transparent.png';
   var page = document.body.getAttribute('data-page') || 'home';
 
   var GNB = [

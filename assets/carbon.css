@@ -116,7 +116,7 @@ button{font-family:var(--font);cursor:pointer;border:none;background:none;}
 .brand .mark i{display:block;width:5px;height:20px;border-radius:3px;background:var(--ink);}
 .brand .mark i:first-child{background:var(--primary);height:24px;}
 .brand .name{font-size:19px;font-weight:700;letter-spacing:-0.3px;color:var(--ink);line-height:1.12;white-space:nowrap;}
-.brand-logo{height:84px;width:auto;display:block;mix-blend-mode:multiply;}
+.brand-logo{height:84px;width:auto;display:block;}
 .gnb{display:flex;height:74px;}
 .gnb-item{position:relative;display:flex;align-items:center;}
 .gnb-item>a{font-size:var(--t-body);font-weight:500;color:var(--ink);padding:0 22px;height:74px;display:flex;align-items:center;position:relative;white-space:nowrap;transition:color .15s ease;}
