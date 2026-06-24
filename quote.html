@@ -30,16 +30,16 @@
         <div class="field-row">
           <div class="field">
             <label>회사명 / 담당자명 <span class="req">*</span></label>
-            <input type="text" placeholder="예) ㈜내일 / 홍길동" required />
+            <input type="text" name="name" placeholder="예) ㈜내일 / 홍길동" required />
           </div>
           <div class="field">
             <label>연락처 <span class="req">*</span></label>
-            <input type="tel" placeholder="010-0000-0000" required />
+            <input type="tel" name="phone" placeholder="010-0000-0000" required />
           </div>
         </div>
         <div class="field">
           <label>건물 소재지 (지역) <span class="req">*</span></label>
-          <input type="text" placeholder="예) 인천 계양구" required />
+          <input type="text" name="location" placeholder="예) 인천 계양구" required />
         </div>
         <div class="field">
           <label>문의 유형</label>
@@ -52,7 +52,7 @@
         </div>
         <div class="field">
           <label>문의 내용</label>
-          <textarea placeholder="층수, 대략적인 면적 등을 적어주시면 더 정확한 상담이 가능합니다."></textarea>
+          <textarea name="message" placeholder="층수, 대략적인 면적 등을 적어주시면 더 정확한 상담이 가능합니다."></textarea>
         </div>
 
         <!-- 개인정보 동의 -->
@@ -75,7 +75,7 @@
         </div>
 
         <button type="submit" class="btn btn-primary quote-submit btn-disabled" id="submitBtn" disabled>제출하기<svg class="ico" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.3"/></svg></button>
-        <p style="font-size:var(--t-caption);color:var(--ink-subtle);margin-top:14px;line-height:1.5;">※ '동의함'을 선택해야 신청 버튼이 활성화됩니다. 제출 시 관리자 이메일로 즉시 알림이 발송되도록 연동할 수 있습니다.</p>
+        <p style="font-size:var(--t-caption);color:var(--ink-subtle);margin-top:14px;line-height:1.5;">※ '동의함'을 선택해야 제출 버튼이 활성화됩니다.</p>
       </form>
 
       <!-- Side -->
@@ -105,8 +105,11 @@
 
 <div id="site-footer"></div>
 <script src="assets/site.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
 (function(){
+  emailjs.init('nOAHn-qigzCbIbt7V');
+
   var form=document.getElementById('quoteForm');
   var btn=document.getElementById('submitBtn');
   var yes=document.getElementById('agreeY');
@@ -121,9 +124,29 @@
   form.addEventListener('submit',function(e){
     e.preventDefault();
     if(!yes.checked) return;
-    alert('무료 상담 신청이 접수되었습니다.\\n빠른 시일 내에 연락드리겠습니다. (데모 화면)');
-    form.reset();
-    sync();
+
+    btn.disabled=true;
+    btn.textContent='전송 중...';
+
+    var kindEl=document.querySelector('input[name="kind"]:checked');
+    var type=kindEl ? kindEl.nextElementSibling.textContent : '';
+
+    emailjs.send('service_0efadb7','template_f4sgifb',{
+      name: form.name.value,
+      phone: form.phone.value,
+      location: form.location.value,
+      type: type,
+      message: form.message.value
+    }).then(function(){
+      alert('신청이 접수되었습니다.\n빠른 시일 내에 연락드리겠습니다.');
+      form.reset();
+      sync();
+      btn.textContent='제출하기';
+    },function(err){
+      alert('전송에 실패했습니다. 잠시 후 다시 시도해주세요.');
+      btn.disabled=false;
+      btn.textContent='제출하기';
+    });
   });
 })();
 </script>
