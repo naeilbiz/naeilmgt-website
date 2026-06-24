@@ -27,19 +27,23 @@
     <div class="quote-grid">
       <!-- Form -->
       <form class="quote-form" id="quoteForm">
+        <div class="field">
+          <label>담당자명 <span class="req">*</span></label>
+          <input type="text" name="name" placeholder="예) 홍길동" required />
+        </div>
+        <div class="field">
+          <label>회사명</label>
+          <input type="text" name="company" placeholder="예) ㈜내일종합관리" />
+        </div>
         <div class="field-row">
-          <div class="field">
-            <label>회사명 / 담당자명 <span class="req">*</span></label>
-            <input type="text" name="name" placeholder="예) ㈜내일 / 홍길동" required />
-          </div>
           <div class="field">
             <label>연락처 <span class="req">*</span></label>
             <input type="tel" name="phone" placeholder="010-0000-0000" required />
           </div>
-        </div>
-        <div class="field">
-          <label>이메일 <span class="req">*</span></label>
-          <input type="email" name="email" placeholder="예) example@email.com" required />
+          <div class="field">
+            <label>이메일 <span class="req">*</span></label>
+            <input type="email" name="email" placeholder="예) example@email.com" required />
+          </div>
         </div>
         <div class="field">
           <label>건물 소재지 (지역) <span class="req">*</span></label>
@@ -137,6 +141,7 @@
 
     emailjs.send('service_0efadb7','template_f4sgifb',{
       name: form.name.value,
+      company: form.company.value || '(미입력)',
       phone: form.phone.value,
       email: form.email.value,
       location: form.location.value,
