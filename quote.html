@@ -38,6 +38,10 @@
           </div>
         </div>
         <div class="field">
+          <label>이메일 <span class="req">*</span></label>
+          <input type="email" name="email" placeholder="예) example@email.com" required />
+        </div>
+        <div class="field">
           <label>건물 소재지 (지역) <span class="req">*</span></label>
           <input type="text" name="location" placeholder="예) 인천 계양구" required />
         </div>
@@ -134,6 +138,7 @@
     emailjs.send('service_0efadb7','template_f4sgifb',{
       name: form.name.value,
       phone: form.phone.value,
+      email: form.email.value,
       location: form.location.value,
       type: type,
       message: form.message.value
