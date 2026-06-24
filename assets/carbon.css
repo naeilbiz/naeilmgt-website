@@ -276,7 +276,7 @@ section{padding:104px 0;}
 .svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
 .svc{background:var(--paper);border:1px solid var(--hairline);border-radius:var(--r-md);padding:32px 30px 34px;transition:transform .2s ease,box-shadow .2s ease;box-shadow:var(--sh-sm);}
 .svc:hover{transform:translateY(-3px);box-shadow:var(--sh-md);}
-.svc .num{font-size:12px;font-weight:700;color:var(--primary);letter-spacing:1.2px;}
+.svc .num{font-size:20px;font-weight:800;color:var(--primary);letter-spacing:1.2px;}
 .svc h4{font-size:var(--t-card-title);font-weight:700;color:var(--ink);margin:16px 0 16px;line-height:1.3;letter-spacing:-0.4px;}
 .svc ul{list-style:none;display:flex;flex-direction:column;gap:11px;}
 .svc ul li{font-size:var(--t-body-sm);color:var(--ink-muted);line-height:1.5;padding-left:18px;position:relative;}
