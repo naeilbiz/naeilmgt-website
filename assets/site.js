@@ -58,7 +58,7 @@
   '<footer class="site-foot"><div class="wrap">'+
     '<div class="foot-grid foot-grid--info">'+
       '<div class="foot-brand">'+
-        '<div class="name">내일종합관리</div>'+
+        '<div class="name">(주)내일종합관리</div>'+
       '</div>'+
       '<div class="foot-info">'+
         '<div class="fi-row fi-row--3">'+
